@@ -1,89 +1,170 @@
 # Expense Tracker
 
-A minimal full-stack personal finance tool built for the assignment brief:
+A lightweight full-stack personal finance application built as part of an assignment. It allows users to record, view, and manage expenses with a focus on simplicity and reliability.
 
-- FastAPI backend API
-- Streamlit frontend
-- SQLite persistence
-- Idempotent expense creation for safe client retries
-- Basic validation, loading/error UI states, and a small test suite
+---
 
-## Run locally
+## Features
 
-Install dependencies:
+* Create and track expenses
+* Idempotent API to prevent duplicate entries during retries
+* Filter and sort expenses
+* FastAPI backend with RESTful design
+* Streamlit frontend
+* SQLite database for persistence
+* Automated testing using pytest
+* Input validation and error handling
 
-```bash
-pip install -r requirements.txt
-```
+---
 
-Start the API:
+## Tech Stack
 
-```bash
-uvicorn backend.main:app --reload
-```
+* Backend: FastAPI
+* Frontend: Streamlit
+* Database: SQLite
+* Testing: Pytest
 
-In another terminal, start the Streamlit app:
+---
 
-```bash
-streamlit run streamlit_app.py
-```
+## Project Structure
 
-On Windows, you can also double-click `start_app.bat` to start both the API and Streamlit app. If you only run `streamlit run streamlit_app.py`, the frontend starts an internal FastAPI server automatically so it can still work on Streamlit Community Cloud.
+Expense-Tracker/
+│
+├── backend/
+│   └── main.py
+├── data/
+│   └── expenses.db
+├── streamlit_app.py
+├── requirements.txt
+├── start_app.bat
+└── tests/
 
-By default, the frontend talks to `http://127.0.0.1:8000`.
+---
 
-The SQLite database is created at `data/expenses.db`.
+## Setup and Run Locally
 
-## API
+1. Install dependencies
+   pip install -r requirements.txt
 
-### `POST /expenses`
+2. Start the backend server
+   uvicorn backend.main:app --reload
 
-Creates an expense.
+3. Run the frontend
+   streamlit run streamlit_app.py
 
-```json
+On Windows, you can use `start_app.bat` to run both services together.
+
+---
+
+## Default Configuration
+
+* Backend API: http://127.0.0.1:8000
+* Database file: data/expenses.db
+
+---
+
+## API Documentation
+
+### POST /expenses
+
+Creates a new expense.
+
+Example request:
 {
-  "amount": "125.50",
-  "category": "Food",
-  "description": "Lunch",
-  "date": "2026-04-29"
+"amount": "125.50",
+"category": "Food",
+"description": "Lunch",
+"date": "2026-04-29"
 }
-```
 
-Use an `Idempotency-Key` header for retry safety. If the same key and same payload are submitted again, the API returns the original expense instead of creating a duplicate. If the same key is reused with a different payload, the API returns `409 Conflict`.
+Idempotency support:
 
-### `GET /expenses`
+* Use an `Idempotency-Key` header
+* Same key with same payload returns the existing record
+* Same key with different payload returns 409 Conflict
 
-Returns expenses. Optional query parameters:
+---
 
-- `category=Food`
-- `sort=date_desc`
+### GET /expenses
 
-## Tests
+Retrieves expenses.
 
-```bash
+Optional query parameters:
+
+* category=Food
+* sort=date_desc
+
+---
+
+## Running Tests
+
 pytest
-```
 
-The tests cover expense creation, list retrieval, category filtering, date sorting, amount validation, and idempotent retry behavior.
+Test coverage includes:
 
-## Design decisions
+* Expense creation
+* Expense retrieval
+* Category filtering
+* Sorting by date
+* Amount validation
+* Idempotent request handling
 
-SQLite is used because it is durable, simple to run locally, and a better fit for realistic refresh/retry behavior than an in-memory store. Money is stored as integer paise (`amount_minor`) to avoid floating point rounding errors, while API responses expose a two-decimal rupee amount string.
+---
 
-The backend supports optional `Idempotency-Key` headers. Without a key, `POST /expenses` behaves like a normal create endpoint. With a key, it becomes safe for the Streamlit app to retry after a slow response, failed response, double submit, or browser refresh.
+## Design Decisions
 
-## Trade-offs
+* SQLite is used for simplicity and persistence
 
-Authentication, user accounts, recurring expenses, pagination, and deployment configuration are intentionally left out to keep the feature set focused. The frontend uses simple Streamlit components rather than a custom design system. Category filtering is exact-match based on the existing saved categories.
+* Monetary values are stored as integer paise (amount_minor) to avoid floating point errors
 
-## Streamlit Community Cloud deployment
+* API responses return formatted values as rupee strings with two decimal places
 
-The app is deployed on Streamlit Community Cloud:
+* Idempotency-Key support ensures:
 
-https://expense-tracker-fenma-assignment.streamlit.app/
+  * Safe retries
+  * No duplicate entries
+  * Reliable behavior in case of refresh or network delays
 
-## Intentionally not done
+---
 
-Custom design system: used simple Streamlit components because of the timebox.
-User authentication and multi-user support were intentionally not included
-to keep the system focused and maintainable within the time constraint.
+## Trade-offs and Limitations
+
+* No authentication or user accounts
+
+* No pagination
+
+* No recurring expense support
+
+* No advanced UI framework
+
+* UI is built using basic Streamlit components
+
+* Category filtering is based on exact matches
+
+---
+
+## Live Demo
+
+
+https://fenmo-assignment-sz8k8j7szqstr6lqqqzqcl.streamlit.app/
+---
+
+## Future Improvements
+
+* Add authentication and user management
+* Implement pagination and search
+* Support recurring expenses
+* Improve UI/UX
+* Add containerization and CI/CD
+
+---
+
+## Contributing
+
+This project is part of an assignment. Suggestions and improvements are welcome.
+
+---
+
+## License
+
+This project is for educational purposes.
