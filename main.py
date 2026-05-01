@@ -37,18 +37,7 @@ def get_connection(db_path: Path) -> sqlite3.Connection:
 def init_db(db_path: Path) -> None:
     with get_connection(db_path) as conn:
         conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS expenses (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                amount_minor INTEGER NOT NULL CHECK (amount_minor > 0),
-                category TEXT NOT NULL CHECK (length(trim(category)) > 0),
-                description TEXT NOT NULL,
-                date TEXT NOT NULL,
-                created_at TEXT NOT NULL,
-                idempotency_key TEXT UNIQUE,
-                request_hash TEXT
-            )
-            """
+          
         )
         conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category)"
